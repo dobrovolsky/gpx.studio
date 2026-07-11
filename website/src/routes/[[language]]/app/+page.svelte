@@ -20,6 +20,7 @@
     import { getURLForGoogleDriveFile } from '$lib/components/embedding/embedding';
     import { db } from '$lib/db';
     import { fileStateCollection } from '$lib/logic/file-state';
+    import { reconnectLiveFiles } from '$lib/logic/file-system-access';
 
     const {
         treeFileView,
@@ -35,9 +36,10 @@
         bottomPanelWidth && bottomPanelWidth >= 540 && $elevationProfile ? 'horizontal' : 'vertical'
     );
 
-    onMount(async () => {
+    onMount(() => {
         settings.connectToDatabase(db);
         fileStateCollection.connectToDatabase(db).then(() => {
+            void reconnectLiveFiles();
             let files: string[] = JSON.parse(page.url.searchParams.get('files') || '[]');
             let ids: string[] = JSON.parse(page.url.searchParams.get('ids') || '[]');
             let urls: string[] = files.concat(ids.map(getURLForGoogleDriveFile));

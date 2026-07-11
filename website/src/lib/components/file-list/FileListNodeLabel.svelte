@@ -17,6 +17,7 @@
         Maximize,
         Scissors,
         FileStack,
+        HardDrive,
     } from '@lucide/svelte';
     import {
         ListFileItem,
@@ -39,6 +40,7 @@
     import { boundsManager } from '$lib/logic/bounds';
     import { gpxColors, gpxLayers } from '$lib/components/map/gpx-layer/gpx-layers';
     import { fileStateCollection } from '$lib/logic/file-state';
+    import { liveFileIds } from '$lib/logic/file-system-access';
     import { waypointPopup } from '$lib/components/map/gpx-layer/gpx-layer-popup';
     import { allowedPastes } from './sortable-file-list';
 
@@ -191,6 +193,16 @@
                     {:else}
                         <MapPin size="16" class="mx-1 shrink-0" />
                     {/if}
+                {/if}
+                {#if item instanceof ListFileItem && $liveFileIds.has(item.getFileId())}
+                    <span
+                        class="ml-1 mr-0.5 flex size-5 shrink-0 items-center justify-center rounded bg-primary text-primary-foreground shadow-sm"
+                        role="img"
+                        aria-label={i18n._('menu.open_live')}
+                        title={i18n._('menu.open_live')}
+                    >
+                        <HardDrive size="14" strokeWidth={2.5} aria-hidden="true" />
+                    </span>
                 {/if}
                 <span
                     class="grow select-none truncate {orientation === 'vertical'

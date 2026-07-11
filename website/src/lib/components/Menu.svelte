@@ -38,6 +38,7 @@
         ClipboardPaste,
         PaintBucket,
         FolderOpen,
+        FolderSync,
         FileStack,
         FileX,
         BookOpenText,
@@ -68,6 +69,7 @@
         triggerFileInput,
     } from '$lib/logic/file-actions';
     import { fileStateCollection } from '$lib/logic/file-state';
+    import { openLiveFiles, supportsFileSystemAccess } from '$lib/logic/file-system-access';
     import { fileActionManager } from '$lib/logic/file-action-manager';
     import { copied, selection } from '$lib/logic/selection';
     import { allHidden } from '$lib/logic/hidden';
@@ -152,6 +154,12 @@
                         {i18n._('menu.open')}
                         <Shortcut key="O" ctrl={true} />
                     </Menubar.Item>
+                    {#if supportsFileSystemAccess}
+                        <Menubar.Item onclick={openLiveFiles}>
+                            <FolderSync size="16" />
+                            {i18n._('menu.open_live')}
+                        </Menubar.Item>
+                    {/if}
                     <Menubar.Separator />
                     <Menubar.Item
                         onclick={fileActions.duplicateSelection}

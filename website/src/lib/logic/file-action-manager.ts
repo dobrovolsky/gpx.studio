@@ -152,16 +152,23 @@ export class FileActionManager {
         selection.updateFiles(updatedFiles, deletedFileIds);
 
         // @ts-ignore
-        return this._db.transaction('rw', this._db.fileids, this._db.files, async () => {
-            if (updatedFileIds.length > 0) {
-                await this._db.fileids.bulkPut(updatedFileIds, updatedFileIds);
-                await this._db.files.bulkPut(updatedFiles, updatedFileIds);
+        return this._db.transaction(
+            'rw',
+            this._db.fileids,
+            this._db.files,
+            this._db.livefilehandles,
+            async () => {
+                if (updatedFileIds.length > 0) {
+                    await this._db.fileids.bulkPut(updatedFileIds, updatedFileIds);
+                    await this._db.files.bulkPut(updatedFiles, updatedFileIds);
+                }
+                if (deletedFileIds.length > 0) {
+                    await this._db.fileids.bulkDelete(deletedFileIds);
+                    await this._db.files.bulkDelete(deletedFileIds);
+                    await this._db.livefilehandles.bulkDelete(deletedFileIds);
+                }
             }
-            if (deletedFileIds.length > 0) {
-                await this._db.fileids.bulkDelete(deletedFileIds);
-                await this._db.files.bulkDelete(deletedFileIds);
-            }
-        });
+        );
     }
 
     applyGlobal(callback: (files: Map<string, GPXFile>) => void) {
